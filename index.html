@@ -20,19 +20,18 @@ main{flex:1;min-height:0}
 #time{font-size:min(13vw,20vh);font-weight:300;letter-spacing:-.03em;line-height:1}
 #date{font-size:min(3vw,4vh);color:var(--mute);margin-top:1vmin}
 .w-now{display:flex;align-items:center;gap:2vmin}
-.w-ico{font-size:min(9vw,11vh)}
-.w-temp{font-size:min(7vw,9vh);font-weight:300}
-.w-desc{color:var(--mute);font-size:min(2.2vw,2.8vh)}
-.days{display:flex;gap:1.5vmin;margin-top:auto}
-.day{flex:1;text-align:center;background:var(--bg);border-radius:1.5vmin;padding:1.2vmin;font-size:min(2vw,2.4vh)}
-.day b{display:block;font-weight:600}
-.day span{color:var(--mute)}
+.w-ico{font-size:min(10vw,13vh)}
+.w-temp{font-size:min(8vw,10vh);font-weight:300}
+.w-desc{color:var(--mute);font-size:min(2.4vw,3vh)}
+.w-det{display:flex;gap:2.4vmin;flex-wrap:wrap;color:var(--mute);font-size:min(2vw,2.4vh);margin:1.4vmin 0}
+.days5{display:flex;flex-direction:column;margin-top:auto}
+.d5{display:flex;align-items:center;gap:1.4vmin;padding:1.1vmin 0;border-top:1px solid var(--line);font-size:min(2.3vw,2.8vh)}
+.d5 b{width:22%;font-weight:600}
+.d5 .ic{font-size:min(3.4vw,4.2vh);width:12%;text-align:center}
+.d5 .rn{flex:1;color:#2b7bb9}
+.d5 .tp{white-space:nowrap}
+.d5 .tp span{color:var(--mute)}
 h2{font-size:min(3vw,3.6vh);font-weight:600;margin-bottom:1.5vmin}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:.6vmin;flex:1;min-height:0;text-align:center;align-content:stretch}
-.cal .h{color:var(--mute);font-size:min(2vw,2.4vh);padding-bottom:.8vmin}
-.cal .d{display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:min(2.6vw,3.2vh);aspect-ratio:1;max-height:100%;margin:auto;width:100%}
-.cal .o{color:#c5c0b4}
-.cal .t{background:var(--acc);color:#fff;font-weight:700}
 button{font:inherit;border:0;cursor:pointer}
 form{display:flex;gap:1vmin;margin-bottom:1.5vmin}
 input[type=text]{flex:1;min-width:0;font-size:min(2.6vw,3vh);padding:1.4vmin 1.8vmin;border:2px solid var(--line);border-radius:1.5vmin;background:var(--bg);color:var(--ink)}
@@ -44,6 +43,14 @@ li span{flex:1;word-break:break-word}
 li.done span{text-decoration:line-through;color:var(--mute)}
 li .x{background:none;color:var(--mute);font-size:min(3.4vw,4vh);padding:0 1vmin}
 .empty{color:var(--mute);padding:2vmin 0;font-size:min(2.4vw,2.8vh)}
+input[type=date],input[type=time]{font:inherit;font-size:min(2.4vw,2.8vh);padding:1.2vmin;border:2px solid var(--line);border-radius:1.5vmin;background:var(--bg);color:var(--ink)}
+#rf{flex-wrap:wrap}#rf input[type=text]{flex:2 1 40%}
+#alarm{display:none;position:fixed;inset:0;background:var(--acc);color:#fff;z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:3vmin;text-align:center;padding:4vmin}
+#alarm.on{display:flex}
+#alarm .big1{font-size:min(14vw,22vh)}
+#alarm h1{font-size:min(7vw,10vh);font-weight:600;word-break:break-word}
+#alarm p{font-size:min(2.6vw,3vh);opacity:.85}
+#alarm .pill{background:#fff;color:var(--acc);font-weight:600}
 .clr{align-self:flex-start;background:none;color:var(--mute);font-size:min(1.9vw,2.2vh);margin-top:1vmin}
 .big li{font-size:min(3.6vw,4.4vh);padding:2vmin 0}
 textarea{flex:1;width:100%;resize:none;border:2px solid var(--line);border-radius:1.5vmin;background:var(--bg);color:var(--ink);font:inherit;font-size:min(3vw,3.6vh);padding:2vmin}
@@ -72,17 +79,20 @@ nav button.fs{flex:.5}
   <section class="view on" id="v-home">
     <div class="card left">
       <div class="card"><div id="time">--:--</div><div id="date"></div></div>
-      <div class="card">
-        <div class="w-now"><div class="w-ico" id="wi">…</div>
-          <div><div class="w-temp" id="wt">--°</div><div class="w-desc" id="wd">İstanbul · yükleniyor</div></div></div>
-        <div class="days" id="wdays"></div>
-      </div>
+      <div class="card"><h2>Yaklaşan hatırlatıcılar</h2><ul id="upcoming"></ul></div>
     </div>
-    <div class="card"><h2 id="mon"></h2><div class="cal" id="cal"></div></div>
+    <div class="card"><h2>İstanbul hava durumu</h2>
+      <div class="w-now"><div class="w-ico" id="wi">…</div><div><div class="w-temp" id="wt">--°</div><div class="w-desc" id="wd">yükleniyor</div></div></div>
+      <div class="w-det" id="wdet"></div>
+      <div class="days5" id="wdays"></div>
+    </div>
     <div class="card"><h2>Yapılacaklar</h2><div id="home-todos" style="display:flex;flex-direction:column;flex:1;min-height:0"></div></div>
   </section>
 
   <section class="view one" id="v-todo"><div class="card big"><h2>Yapılacaklar</h2><div id="big-todos" style="display:flex;flex-direction:column;flex:1;min-height:0"></div></div></section>
+  <section class="view one" id="v-rem"><div class="card big"><h2>Hatırlatıcılar</h2>
+    <form id="rf"><input type="text" id="rt" placeholder="Ne hatırlatılsın?" autocomplete="off"><input type="date" id="rd"><input type="time" id="rtm"><button class="add" type="submit">+</button></form>
+    <ul id="rlist"></ul></div></section>
   <section class="view one" id="v-shop"><div class="card big"><h2>Alışveriş listesi</h2><div id="shop" style="display:flex;flex-direction:column;flex:1;min-height:0"></div></div></section>
   <section class="view one" id="v-note"><div class="card"><h2>Not defteri</h2><textarea id="note" placeholder="Buraya yaz, otomatik kaydedilir…"></textarea></div></section>
   <section class="view one" id="v-timer">
@@ -94,10 +104,13 @@ nav button.fs{flex:.5}
   </section>
 </main>
 
+<div id="alarm"><div class="big1">⏰</div><h1 id="atext"></h1><p id="alate"></p>
+  <div class="row"><button class="pill" id="aok">Tamam</button><button class="pill" id="asn">10 dk ertele</button></div></div>
 <nav id="nav">
   <button data-v="home" class="on">🏠 Ana panel</button>
   <button data-v="todo">✅ Yapılacaklar</button>
   <button data-v="shop">🛒 Alışveriş</button>
+  <button data-v="rem">⏰ Hatırlatıcı</button>
   <button data-v="note">📝 Not</button>
   <button data-v="timer">⏱️ Zamanlayıcı</button>
   <button class="fs" id="fs">⛶</button>
@@ -126,23 +139,7 @@ function tick(){
   const n=new Date();
   $("time").textContent=pad(n.getHours())+":"+pad(n.getMinutes());
   $("date").textContent=n.getDate()+" "+AYLAR[n.getMonth()]+" "+n.getFullYear()+", "+GUNLER[n.getDay()];
-  if(tick.d!==n.getDate()){tick.d=n.getDate();drawCal(n)}
 }
-function drawCal(n){
-  const y=n.getFullYear(),m=n.getMonth();
-  $("mon").textContent=AYLAR[m]+" "+y;
-  let h=["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"].map(x=>`<div class="h">${x}</div>`).join("");
-  const first=(new Date(y,m,1).getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),prev=new Date(y,m,0).getDate();
-  const total=Math.ceil((first+dim)/7)*7;
-  for(let i=0;i<total;i++){
-    const d=i-first+1;
-    if(d<1)h+=`<div class="d o">${prev+d}</div>`;
-    else if(d>dim)h+=`<div class="d o">${d-dim}</div>`;
-    else h+=`<div class="d${d===n.getDate()?" t":""}">${d}</div>`;
-  }
-  $("cal").innerHTML=h;
-}
-
 /* ---- hava durumu ---- */
 function wc(c){
   if(c===0)return["☀️","Açık"];if(c<=2)return["🌤️","Parçalı bulutlu"];if(c===3)return["☁️","Kapalı"];
@@ -152,15 +149,17 @@ function wc(c){
 }
 async function weather(){
   try{
-    const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=41.01&longitude=28.98&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Europe%2FIstanbul&forecast_days=4");
+    const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=41.01&longitude=28.98&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FIstanbul&forecast_days=5");
     if(!r.ok)throw new Error("sunucu "+r.status);
-    const j=await r.json();
-    const [i,t]=wc(j.current.weather_code);
-    $("wi").textContent=i;$("wt").textContent=Math.round(j.current.temperature_2m)+"°C";$("wd").textContent="İstanbul · "+t;
-    $("wdays").innerHTML=j.daily.time.slice(1).map((d,k)=>{const q=k+1;
-      return `<div class="day"><b>${GUNLER[new Date(d).getDay()].slice(0,3)}</b>${wc(j.daily.weather_code[q])[0]}<br>${Math.round(j.daily.temperature_2m_max[q])}° <span>${Math.round(j.daily.temperature_2m_min[q])}°</span></div>`}).join("");
+    const j=await r.json(),c=j.current,d=j.daily;
+    const [i,t]=wc(c.weather_code);
+    $("wi").textContent=i;$("wt").textContent=Math.round(c.temperature_2m)+"°C";$("wd").textContent=t;
+    $("wdet").innerHTML=`<span>Hissedilen ${Math.round(c.apparent_temperature)}°</span><span>Nem %${Math.round(c.relative_humidity_2m)}</span><span>Rüzgar ${Math.round(c.wind_speed_10m)} km/s</span>`;
+    $("wdays").innerHTML=d.time.map((x,k)=>{
+      const dt=new Date(x+"T12:00:00");
+      return `<div class="d5"><b>${k===0?"Bugün":GUNLER[dt.getDay()].slice(0,3)}</b><span class="ic">${wc(d.weather_code[k])[0]}</span><span class="rn">☔ %${d.precipitation_probability_max[k]==null?"-":d.precipitation_probability_max[k]}</span><span class="tp">${Math.round(d.temperature_2m_max[k])}° <span>${Math.round(d.temperature_2m_min[k])}°</span></span></div>`}).join("");
   }catch(e){
-    $("wd").textContent="İstanbul · hava durumu alınamadı ("+(e&&e.message?e.message:"hata")+"), 1 dk sonra tekrar denenecek";
+    $("wd").textContent="hava durumu alınamadı ("+(e&&e.message?e.message:"hata")+"), 1 dk sonra tekrar denenecek";
     setTimeout(weather,60000);
   }
 }
@@ -224,6 +223,53 @@ $("tgo").onclick=()=>{
 };
 $("trst").onclick=()=>tSet(timer.set/60);
 tShow();
+
+/* ---- hatırlatıcılar ---- */
+let rems=[];try{rems=JSON.parse(localStorage.getItem("rem")||"[]")}catch(e){}
+const saveR=()=>{try{localStorage.setItem("rem",JSON.stringify(rems))}catch(e){}};
+function fmtDT(ms){const d=new Date(ms);return d.getDate()+" "+AYLAR[d.getMonth()]+" "+GUNLER[d.getDay()].slice(0,3)+" "+pad(d.getHours())+":"+pad(d.getMinutes())}
+function renderR(){
+  rems.sort((a,b)=>a.at-b.at);
+  const l=$("rlist");l.innerHTML="";
+  if(!rems.length)l.innerHTML='<div class="empty">Henüz hatırlatıcı yok.</div>';
+  rems.forEach((r,i)=>{
+    const li=document.createElement("li");if(r.fired)li.className="done";
+    const s=document.createElement("span");s.textContent=fmtDT(r.at)+" · "+r.text;
+    const x=document.createElement("button");x.className="x";x.textContent="✕";
+    x.onclick=()=>{rems.splice(i,1);saveR();renderR()};
+    li.append(s,x);l.append(li);
+  });
+  const nx=rems.filter(r=>!r.fired).slice(0,3),u=$("upcoming");u.innerHTML="";
+  if(!nx.length)u.innerHTML='<div class="empty">Yaklaşan hatırlatıcı yok.</div>';
+  nx.forEach(r=>{const li=document.createElement("li");li.style.fontSize="min(2.4vw,2.8vh)";const s=document.createElement("span");s.textContent=fmtDT(r.at)+" · "+r.text;li.append(s);u.append(li)});
+}
+const now0=new Date();$("rd").value=now0.getFullYear()+"-"+pad(now0.getMonth()+1)+"-"+pad(now0.getDate());
+$("rf").onsubmit=e=>{
+  e.preventDefault();
+  const t=$("rt").value.trim(),d=$("rd").value,tm=$("rtm").value;
+  if(!t||!d||!tm)return;
+  const [y,m,dd]=d.split("-").map(Number),[h,mi]=tm.split(":").map(Number);
+  rems.push({text:t,at:new Date(y,m-1,dd,h,mi).getTime(),fired:false});
+  $("rt").value="";saveR();renderR();
+};
+let ringing=null,ringIv=null;
+function ring(r){
+  ringing=r;
+  $("atext").textContent=r.text;
+  $("alate").textContent=Date.now()-r.at>120000?"Zamanında uyarılamadı, planlanan saat: "+fmtDT(r.at):fmtDT(r.at);
+  $("alarm").classList.add("on");
+  const go=()=>{beep();try{navigator.vibrate&&navigator.vibrate([300,150,300])}catch(e){}};
+  go();ringIv=setInterval(go,5000);
+}
+function stopRing(){clearInterval(ringIv);$("alarm").classList.remove("on");ringing=null}
+$("aok").onclick=()=>{if(ringing){ringing.fired=true;saveR();renderR()}stopRing()};
+$("asn").onclick=()=>{if(ringing){ringing.at=Date.now()+600000;ringing.fired=false;saveR();renderR()}stopRing()};
+setInterval(()=>{
+  if(ringing)return;
+  const r=rems.find(x=>!x.fired&&x.at<=Date.now());
+  if(r)ring(r);
+},3000);
+renderR();setInterval(renderR,60000);
 
 /* ---- başlat ---- */
 async function wake(){try{await navigator.wakeLock.request("screen")}catch(e){}}
