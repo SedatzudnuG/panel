@@ -12,9 +12,10 @@ body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"
 main{flex:1;min-height:0}
 .view{display:none;height:100%}
 .view.on{display:grid}
-#v-home{grid-template-columns:1.1fr 1.2fr 1fr;gap:2vmin}
-.one{grid-template-columns:1fr;gap:2vmin}
-.card{background:var(--card);border-radius:2vmin;padding:2.4vmin;box-shadow:0 1px 3px #0001;display:flex;flex-direction:column;min-height:0}
+.one{grid-template-rows:minmax(0,1fr)}
+#v-home{grid-template-columns:minmax(0,1.1fr) minmax(0,1.2fr) minmax(0,1fr);gap:2vmin}
+.one{grid-template-columns:minmax(0,1fr);gap:2vmin}
+.card{min-width:0;background:var(--card);border-radius:2vmin;padding:2.4vmin;box-shadow:0 1px 3px #0001;display:flex;flex-direction:column;min-height:0}
 .left{gap:2vmin;background:none;box-shadow:none;padding:0}
 .left .card{flex:1}
 #time{font-size:min(13vw,20vh);font-weight:300;letter-spacing:-.03em;line-height:1}
@@ -24,19 +25,24 @@ main{flex:1;min-height:0}
 .w-temp{font-size:min(8vw,10vh);font-weight:300}
 .w-desc{color:var(--mute);font-size:min(2.4vw,3vh)}
 .w-det{display:flex;gap:2.4vmin;flex-wrap:wrap;color:var(--mute);font-size:min(2vw,2.4vh);margin:1.4vmin 0}
-#wcard{background:#dbe9f6;--rain:#2b7bb9;transition:background .6s;min-height:0}
-#wcard.sun{background:#fbeec2}#wcard.cloud{background:#e3e6ea}#wcard.rain{background:#cfe1f1}#wcard.snow{background:#eaf0f6}#wcard.storm{background:#cdc6dc}
-#wcard.night{background:#1f2a48;color:#fff;--mute:#aab5d6;--line:#ffffff22;--rain:#8cc4f0}
+.wc{background:#dbe9f6;--rain:#2b7bb9;transition:background .6s;min-height:0}
+.wc.sun{background:#fbeec2}.wc.cloud{background:#e3e6ea}.wc.rain{background:#cfe1f1}.wc.snow{background:#eaf0f6}.wc.storm{background:#cdc6dc}
+.wc.night{background:#1f2a48;color:#fff;--mute:#aab5d6;--line:#ffffff22;--rain:#8cc4f0}
 .w-ico{display:inline-block}
 .w-ico.a-sun{animation:sp 60s linear infinite}.w-ico.a-cloud{animation:fl 5s ease-in-out infinite}.w-ico.a-rain{animation:fl 2.5s ease-in-out infinite}
 @keyframes sp{to{transform:rotate(360deg)}}@keyframes fl{50%{transform:translateY(-1vmin)}}
 .hrs{display:flex;gap:.6vmin;overflow-x:auto;padding:.8vmin;background:#ffffff80;border-radius:1.5vmin;margin:1.2vmin 0;flex:none;-webkit-overflow-scrolling:touch}
-#wcard.night .hrs,#wcard.night .dlist{background:#ffffff14}
+.wc.night .hrs,.wc.night .dlist{background:#ffffff14}
+.hrs.fit{overflow:hidden}.hrs.fit .hr{flex:1;width:auto}
 .hr{flex:none;width:min(9.5vw,11.5vh);text-align:center;font-size:min(2vw,2.4vh);padding:.6vmin 0}
 .hr .t{color:var(--mute)}.hr .ic{font-size:min(3.4vw,4.2vh);display:block;margin:.3vmin 0}.hr .p{color:var(--rain);font-size:min(1.8vw,2.1vh)}
 .dlist{flex:1;min-height:0;overflow-y:auto;background:#ffffff80;border-radius:1.5vmin;padding:0 1.4vmin;-webkit-overflow-scrolling:touch}
-.d5{display:flex;align-items:center;gap:1.4vmin;padding:1.1vmin 0;border-top:1px solid var(--line);font-size:min(2.3vw,2.8vh)}
+.d5{cursor:pointer;display:flex;align-items:center;gap:1.4vmin;padding:1.1vmin 0;border-top:1px solid var(--line);font-size:min(2.3vw,2.8vh)}
 .d5:first-child{border-top:0}
+.d5.sel{background:#ffffffa0;border-radius:1vmin;margin:0 -1vmin;padding-left:1vmin;padding-right:1vmin}
+.wc.night .d5.sel{background:#ffffff26}
+#wcard2 .hr{width:min(12vw,14vh);font-size:min(2.4vw,2.9vh)}#wcard2 .hr .ic{font-size:min(4.6vw,5.6vh)}#wcard2 .hr .p{font-size:min(2.2vw,2.6vh)}
+#wcard2 .d5{font-size:min(2.8vw,3.4vh);padding:1.6vmin 0}#wcard2 .d5 .ic{font-size:min(4.4vw,5.4vh)}
 .d5 b{width:26%;font-weight:600}
 .d5 .ic{font-size:min(3.4vw,4.2vh);width:12%;text-align:center}
 .d5 .rn{flex:1;color:var(--rain)}
@@ -92,15 +98,18 @@ nav button.fs{flex:.5}
       <div class="card"><div id="time">--:--</div><div id="date"></div></div>
       <div class="card"><h2>Yaklaşan hatırlatıcılar</h2><ul id="upcoming"></ul></div>
     </div>
-    <div class="card" id="wcard"><h2>İstanbul hava durumu</h2>
+    <div class="card wc" id="wcard"><h2>İstanbul hava durumu</h2>
       <div class="w-now"><div class="w-ico" id="wi">…</div><div><div class="w-temp" id="wt">--°</div><div class="w-desc" id="wd">yükleniyor</div></div></div>
       <div class="w-det" id="wdet"></div>
-      <div class="hrs" id="whrs"></div>
+      <div class="hrs fit" id="whrs"></div>
       <div class="dlist" id="wdays"></div>
     </div>
     <div class="card"><h2>Yapılacaklar</h2><div id="home-todos" style="display:flex;flex-direction:column;flex:1;min-height:0"></div></div>
   </section>
 
+  <section class="view one" id="v-wx"><div class="card wc" id="wcard2"><h2 id="w2h">Hava durumu · İstanbul</h2>
+    <div class="w-now"><div class="w-ico" id="wi2">…</div><div><div class="w-temp" id="wt2">--°</div><div class="w-desc" id="wd2"></div></div></div>
+    <div class="w-det" id="wdet2"></div><div class="hrs" id="whrs2"></div><div class="dlist" id="wdays2"></div></div></section>
   <section class="view one" id="v-todo"><div class="card big"><h2>Yapılacaklar</h2><div id="big-todos" style="display:flex;flex-direction:column;flex:1;min-height:0"></div></div></section>
   <section class="view one" id="v-rem"><div class="card big"><h2>Hatırlatıcılar</h2>
     <form id="rf"><input type="text" id="rt" placeholder="Ne hatırlatılsın?" autocomplete="off"><input type="date" id="rd"><input type="time" id="rtm"><button class="add" type="submit">+</button></form>
@@ -121,6 +130,7 @@ nav button.fs{flex:.5}
   <div class="row"><button class="pill" id="aok">Tamam</button><button class="pill" id="asn">10 dk ertele</button></div></div>
 <nav id="nav">
   <button data-v="home" class="on">🏠 Ana panel</button>
+  <button data-v="wx">🌦️ Hava</button>
   <button data-v="todo">✅ Yapılacaklar</button>
   <button data-v="shop">🛒 Alışveriş</button>
   <button data-v="rem">⏰ Hatırlatıcı</button>
@@ -177,29 +187,64 @@ function wc(c,day){
   return["⛈️","Gök gürültülü","storm","rain"];
 }
 const pc=v=>v==null?"%-":"%"+Math.round(v);
+let WX=null,selDay=0;
+const dayName=(x,k)=>{const dt=new Date(x+"T12:00:00");return k===0?"Bugün":k===1?"Yarın":GUNLER[dt.getDay()].slice(0,3)+" "+dt.getDate()};
+function hoursHtml(from,n){
+  const h=WX.h;let o="";
+  for(let k=from;k<Math.min(from+n,h.time.length);k++){
+    const hr=h.time[k].slice(11,13);
+    const lab=k===WX.st?"Şimdi":(hr==="00"&&k!==from?GUNLER[new Date(h.time[k].slice(0,10)+"T12:00:00").getDay()].slice(0,3):hr+":00");
+    o+=`<div class="hr"><div class="t">${lab}</div><span class="ic">${wc(h.weather_code[k],h.is_day[k])[0]}</span><div>${Math.round(h.temperature_2m[k])}°</div><div class="p">${pc(h.precipitation_probability[k])}</div></div>`}
+  return o;
+}
+function daysHtml(n,sel){
+  const d=WX.d;
+  return d.time.slice(0,n).map((x,k)=>`<div class="d5${k===sel?" sel":""}" data-k="${k}"><b>${dayName(x,k)}</b><span class="ic">${wc(d.weather_code[k],1)[0]}</span><span class="rn">☔ ${pc(d.precipitation_probability_max[k])}</span><span class="tp">${Math.round(d.temperature_2m_max[k])}° <span>${Math.round(d.temperature_2m_min[k])}°</span></span></div>`).join("");
+}
+function curDet(){const c=WX.c;return `<span>Hissedilen ${Math.round(c.apparent_temperature)}°</span><span>Nem %${Math.round(c.relative_humidity_2m)}</span><span>Rüzgar ${Math.round(c.wind_speed_10m)} km/s</span><span>Basınç ${Math.round(c.surface_pressure)} hPa</span>`}
+function renderHome(){
+  const c=WX.c,[i,t,th,an]=wc(c.weather_code,c.is_day);
+  $("wcard").className="card wc "+(c.is_day?th:"night");
+  $("wi").textContent=i;$("wi").className="w-ico a-"+an;
+  $("wt").textContent=Math.round(c.temperature_2m)+"°C";$("wd").textContent=t;
+  $("wdet").innerHTML=curDet();
+  $("whrs").innerHTML=hoursHtml(WX.st,6);
+  $("wdays").innerHTML=daysHtml(5,-1);
+}
+function renderDetail(k){
+  selDay=k;
+  const {c,d,h}=WX;
+  let i,t,th,an,theme,temp,det;
+  if(k===0){
+    [i,t,th,an]=wc(c.weather_code,c.is_day);theme=c.is_day?th:"night";
+    temp=Math.round(c.temperature_2m)+"°C";det=curDet();
+  }else{
+    [i,t,th,an]=wc(d.weather_code[k],1);theme=th;
+    temp=Math.round(d.temperature_2m_max[k])+"° / "+Math.round(d.temperature_2m_min[k])+"°";
+    const ix=[];h.time.forEach((x,q)=>{if(x.slice(0,10)===d.time[k])ix.push(q)});
+    const avg=a=>a.reduce((p,q)=>p+q,0)/(a.length||1);
+    det=`<span>Yağış olasılığı ${pc(d.precipitation_probability_max[k])}</span><span>Nem ort. %${Math.round(avg(ix.map(q=>h.relative_humidity_2m[q])))}</span><span>Rüzgar maks. ${Math.round(Math.max(...ix.map(q=>h.wind_speed_10m[q])))} km/s</span><span>Basınç ort. ${Math.round(avg(ix.map(q=>h.surface_pressure[q])))} hPa</span>`;
+  }
+  $("wcard2").className="card wc "+theme;
+  $("w2h").textContent="Hava durumu · İstanbul · "+(k===0?"Bugün":dayName(d.time[k],k));
+  $("wi2").textContent=i;$("wi2").className="w-ico a-"+an;
+  $("wt2").textContent=temp;$("wd2").textContent=t;
+  $("wdet2").innerHTML=det;
+  const from=k===0?WX.st:Math.max(0,h.time.findIndex(x=>x.slice(0,10)===d.time[k]));
+  $("whrs2").innerHTML=hoursHtml(from,24);$("whrs2").scrollLeft=0;
+  const sc=$("wdays2").scrollTop;
+  $("wdays2").innerHTML=daysHtml(10,k);$("wdays2").scrollTop=sc;
+}
+$("wdays2").onclick=e=>{const r=e.target.closest(".d5");if(r)renderDetail(+r.dataset.k)};
+$("wdays").onclick=e=>{const r=e.target.closest(".d5");if(r){renderDetail(+r.dataset.k);show("wx")}};
 async function weather(){
   try{
-    const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=41.01&longitude=28.98&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,surface_pressure,weather_code,is_day&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FIstanbul&forecast_days=10");
+    const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=41.01&longitude=28.98&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,surface_pressure,weather_code,is_day&hourly=temperature_2m,precipitation_probability,weather_code,is_day,relative_humidity_2m,wind_speed_10m,surface_pressure&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FIstanbul&forecast_days=10");
     if(!r.ok)throw new Error("sunucu "+r.status);
-    const j=await r.json(),c=j.current,d=j.daily,h=j.hourly;
-    const [i,t,th,an]=wc(c.weather_code,c.is_day);
-    $("wi").textContent=i;$("wi").className="w-ico a-"+an;
-    $("wcard").className="card "+(c.is_day?th:"night");
-    $("wt").textContent=Math.round(c.temperature_2m)+"°C";$("wd").textContent=t;
-    $("wdet").innerHTML=`<span>Hissedilen ${Math.round(c.apparent_temperature)}°</span><span>Nem %${Math.round(c.relative_humidity_2m)}</span><span>Rüzgar ${Math.round(c.wind_speed_10m)} km/s</span><span>Basınç ${Math.round(c.surface_pressure)} hPa</span>`;
-    const cur=c.time.slice(0,13);
-    let st=h.time.findIndex(x=>x.slice(0,13)>=cur);if(st<0)st=0;
-    let hh="";
-    for(let k=st;k<Math.min(st+72,h.time.length);k++){
-      const hr=h.time[k].slice(11,13),first=k===st;
-      const lab=first?"Şimdi":(hr==="00"?GUNLER[new Date(h.time[k].slice(0,10)+"T12:00:00").getDay()].slice(0,3):hr+":00");
-      hh+=`<div class="hr"><div class="t">${lab}</div><span class="ic">${wc(h.weather_code[k],h.is_day[k])[0]}</span><div>${Math.round(h.temperature_2m[k])}°</div><div class="p">${pc(h.precipitation_probability[k])}</div></div>`;
-    }
-    $("whrs").innerHTML=hh;
-    $("wdays").innerHTML=d.time.map((x,k)=>{
-      const dt=new Date(x+"T12:00:00");
-      const nm=k===0?"Bugün":k===1?"Yarın":GUNLER[dt.getDay()].slice(0,3)+" "+dt.getDate();
-      return `<div class="d5"><b>${nm}</b><span class="ic">${wc(d.weather_code[k],1)[0]}</span><span class="rn">☔ ${pc(d.precipitation_probability_max[k])}</span><span class="tp">${Math.round(d.temperature_2m_max[k])}° <span>${Math.round(d.temperature_2m_min[k])}°</span></span></div>`}).join("");
+    const j=await r.json();
+    let st=j.hourly.time.findIndex(x=>x.slice(0,13)>=j.current.time.slice(0,13));if(st<0)st=0;
+    WX={c:j.current,d:j.daily,h:j.hourly,st:st};
+    renderHome();renderDetail(Math.min(selDay,9));
   }catch(e){
     $("wd").textContent="hava durumu alınamadı ("+(e&&e.message?e.message:"hata")+"), 1 dk sonra tekrar denenecek";
     setTimeout(weather,60000);
