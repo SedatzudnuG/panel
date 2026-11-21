@@ -24,11 +24,22 @@ main{flex:1;min-height:0}
 .w-temp{font-size:min(8vw,10vh);font-weight:300}
 .w-desc{color:var(--mute);font-size:min(2.4vw,3vh)}
 .w-det{display:flex;gap:2.4vmin;flex-wrap:wrap;color:var(--mute);font-size:min(2vw,2.4vh);margin:1.4vmin 0}
-.days5{display:flex;flex-direction:column;margin-top:auto}
+#wcard{background:#dbe9f6;--rain:#2b7bb9;transition:background .6s;min-height:0}
+#wcard.sun{background:#fbeec2}#wcard.cloud{background:#e3e6ea}#wcard.rain{background:#cfe1f1}#wcard.snow{background:#eaf0f6}#wcard.storm{background:#cdc6dc}
+#wcard.night{background:#1f2a48;color:#fff;--mute:#aab5d6;--line:#ffffff22;--rain:#8cc4f0}
+.w-ico{display:inline-block}
+.w-ico.a-sun{animation:sp 60s linear infinite}.w-ico.a-cloud{animation:fl 5s ease-in-out infinite}.w-ico.a-rain{animation:fl 2.5s ease-in-out infinite}
+@keyframes sp{to{transform:rotate(360deg)}}@keyframes fl{50%{transform:translateY(-1vmin)}}
+.hrs{display:flex;gap:.6vmin;overflow-x:auto;padding:.8vmin;background:#ffffff80;border-radius:1.5vmin;margin:1.2vmin 0;flex:none;-webkit-overflow-scrolling:touch}
+#wcard.night .hrs,#wcard.night .dlist{background:#ffffff14}
+.hr{flex:none;width:min(9.5vw,11.5vh);text-align:center;font-size:min(2vw,2.4vh);padding:.6vmin 0}
+.hr .t{color:var(--mute)}.hr .ic{font-size:min(3.4vw,4.2vh);display:block;margin:.3vmin 0}.hr .p{color:var(--rain);font-size:min(1.8vw,2.1vh)}
+.dlist{flex:1;min-height:0;overflow-y:auto;background:#ffffff80;border-radius:1.5vmin;padding:0 1.4vmin;-webkit-overflow-scrolling:touch}
 .d5{display:flex;align-items:center;gap:1.4vmin;padding:1.1vmin 0;border-top:1px solid var(--line);font-size:min(2.3vw,2.8vh)}
-.d5 b{width:22%;font-weight:600}
+.d5:first-child{border-top:0}
+.d5 b{width:26%;font-weight:600}
 .d5 .ic{font-size:min(3.4vw,4.2vh);width:12%;text-align:center}
-.d5 .rn{flex:1;color:#2b7bb9}
+.d5 .rn{flex:1;color:var(--rain)}
 .d5 .tp{white-space:nowrap}
 .d5 .tp span{color:var(--mute)}
 h2{font-size:min(3vw,3.6vh);font-weight:600;margin-bottom:1.5vmin}
@@ -81,10 +92,11 @@ nav button.fs{flex:.5}
       <div class="card"><div id="time">--:--</div><div id="date"></div></div>
       <div class="card"><h2>Yaklaşan hatırlatıcılar</h2><ul id="upcoming"></ul></div>
     </div>
-    <div class="card"><h2>İstanbul hava durumu</h2>
+    <div class="card" id="wcard"><h2>İstanbul hava durumu</h2>
       <div class="w-now"><div class="w-ico" id="wi">…</div><div><div class="w-temp" id="wt">--°</div><div class="w-desc" id="wd">yükleniyor</div></div></div>
       <div class="w-det" id="wdet"></div>
-      <div class="days5" id="wdays"></div>
+      <div class="hrs" id="whrs"></div>
+      <div class="dlist" id="wdays"></div>
     </div>
     <div class="card"><h2>Yapılacaklar</h2><div id="home-todos" style="display:flex;flex-direction:column;flex:1;min-height:0"></div></div>
   </section>
@@ -152,23 +164,42 @@ function tick(){
   $("date").textContent=n.getDate()+" "+AYLAR[n.getMonth()]+" "+n.getFullYear()+", "+GUNLER[n.getDay()];
 }
 /* ---- hava durumu ---- */
-function wc(c){
-  if(c===0)return["☀️","Açık"];if(c<=2)return["🌤️","Parçalı bulutlu"];if(c===3)return["☁️","Kapalı"];
-  if(c<=48)return["🌫️","Sisli"];if(c<=57)return["🌦️","Çise"];if(c<=67)return["🌧️","Yağmurlu"];
-  if(c<=77)return["🌨️","Karlı"];if(c<=82)return["🌧️","Sağanak"];if(c<=86)return["🌨️","Kar sağanağı"];
-  return["⛈️","Gök gürültülü"];
+function wc(c,day){
+  if(c===0)return day?["☀️","Açık","sun","sun"]:["🌙","Açık","night",""];
+  if(c<=2)return day?["🌤️","Parçalı bulutlu","sun","cloud"]:["☁️","Parçalı bulutlu","night","cloud"];
+  if(c===3)return["☁️","Kapalı","cloud","cloud"];
+  if(c<=48)return["🌫️","Sisli","cloud",""];
+  if(c<=57)return["🌦️","Çise","rain","rain"];
+  if(c<=67)return["🌧️","Yağmurlu","rain","rain"];
+  if(c<=77)return["🌨️","Karlı","snow","cloud"];
+  if(c<=82)return["🌧️","Sağanak","rain","rain"];
+  if(c<=86)return["🌨️","Kar sağanağı","snow","cloud"];
+  return["⛈️","Gök gürültülü","storm","rain"];
 }
+const pc=v=>v==null?"%-":"%"+Math.round(v);
 async function weather(){
   try{
-    const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=41.01&longitude=28.98&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FIstanbul&forecast_days=10");
+    const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=41.01&longitude=28.98&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,surface_pressure,weather_code,is_day&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FIstanbul&forecast_days=10");
     if(!r.ok)throw new Error("sunucu "+r.status);
-    const j=await r.json(),c=j.current,d=j.daily;
-    const [i,t]=wc(c.weather_code);
-    $("wi").textContent=i;$("wt").textContent=Math.round(c.temperature_2m)+"°C";$("wd").textContent=t;
-    $("wdet").innerHTML=`<span>Hissedilen ${Math.round(c.apparent_temperature)}°</span><span>Nem %${Math.round(c.relative_humidity_2m)}</span><span>Rüzgar ${Math.round(c.wind_speed_10m)} km/s</span>`;
+    const j=await r.json(),c=j.current,d=j.daily,h=j.hourly;
+    const [i,t,th,an]=wc(c.weather_code,c.is_day);
+    $("wi").textContent=i;$("wi").className="w-ico a-"+an;
+    $("wcard").className="card "+(c.is_day?th:"night");
+    $("wt").textContent=Math.round(c.temperature_2m)+"°C";$("wd").textContent=t;
+    $("wdet").innerHTML=`<span>Hissedilen ${Math.round(c.apparent_temperature)}°</span><span>Nem %${Math.round(c.relative_humidity_2m)}</span><span>Rüzgar ${Math.round(c.wind_speed_10m)} km/s</span><span>Basınç ${Math.round(c.surface_pressure)} hPa</span>`;
+    const cur=c.time.slice(0,13);
+    let st=h.time.findIndex(x=>x.slice(0,13)>=cur);if(st<0)st=0;
+    let hh="";
+    for(let k=st;k<Math.min(st+72,h.time.length);k++){
+      const hr=h.time[k].slice(11,13),first=k===st;
+      const lab=first?"Şimdi":(hr==="00"?GUNLER[new Date(h.time[k].slice(0,10)+"T12:00:00").getDay()].slice(0,3):hr+":00");
+      hh+=`<div class="hr"><div class="t">${lab}</div><span class="ic">${wc(h.weather_code[k],h.is_day[k])[0]}</span><div>${Math.round(h.temperature_2m[k])}°</div><div class="p">${pc(h.precipitation_probability[k])}</div></div>`;
+    }
+    $("whrs").innerHTML=hh;
     $("wdays").innerHTML=d.time.map((x,k)=>{
       const dt=new Date(x+"T12:00:00");
-      return `<div class="d5"><b>${k===0?"Bugün":GUNLER[dt.getDay()].slice(0,3)}</b><span class="ic">${wc(d.weather_code[k])[0]}</span><span class="rn">☔ %${d.precipitation_probability_max[k]==null?"-":d.precipitation_probability_max[k]}</span><span class="tp">${Math.round(d.temperature_2m_max[k])}° <span>${Math.round(d.temperature_2m_min[k])}°</span></span></div>`}).join("");
+      const nm=k===0?"Bugün":k===1?"Yarın":GUNLER[dt.getDay()].slice(0,3)+" "+dt.getDate();
+      return `<div class="d5"><b>${nm}</b><span class="ic">${wc(d.weather_code[k],1)[0]}</span><span class="rn">☔ ${pc(d.precipitation_probability_max[k])}</span><span class="tp">${Math.round(d.temperature_2m_max[k])}° <span>${Math.round(d.temperature_2m_min[k])}°</span></span></div>`}).join("");
   }catch(e){
     $("wd").textContent="hava durumu alınamadı ("+(e&&e.message?e.message:"hata")+"), 1 dk sonra tekrar denenecek";
     setTimeout(weather,60000);
@@ -322,8 +353,5 @@ tick();setInterval(tick,1000);
 weather();setInterval(weather,30*60*1000);
 wake();
 </script>
-
-  <div id="ww_96fd8d8ecaea5" v='1.3' loc='id' a='{"t":"horizontal","lang":"tr","sl_lpl":1,"ids":[],"font":"Arial","sl_ics":"one_a","sl_sot":"celsius","cl_bkg":"image","cl_font":"#FFFFFF","cl_cloud":"#FFFFFF","cl_persp":"#81D4FA","cl_sun":"#FFC107","cl_moon":"#FFC107","cl_thund":"#FF5722"}'>Daha fazla hava durumu tahmini: <a href="https://oneweather.org/tr/ankara/15_days/" id="ww_96fd8d8ecaea5_u" target="_blank">Ankarada 15 günlük hava durumu</a></div><script async src="https://app3.weatherwidget.org/js/?id=ww_96fd8d8ecaea5"></script>
-  
 </body>
 </html>
